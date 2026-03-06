@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="SoilCensus Data Licensing — how researchers and institutions can access the aggregate soil microbiome dataset.">
+<title>Data Licensing — SoilCensus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;0,900;1,300;1,400&family=Barlow+Condensed:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --white:#FFFFFF;--off:#F7F9F9;--teal:#2BBFAD;--teal-text:#0C6B61;
+  --teal-dk:#1E9D8E;--teal-lt:#E6F8F6;--navy:#1A2E35;--text:#1A2E35;
+  --text-mid:#3D5560;--text-dim:#4E6870;--border:#D4DFE1;
+  --light-head:#F7F9F9;--light-body:#A7BEC6;
+  --f-head:'Barlow Condensed','Arial Narrow',sans-serif;
+  --f-body:'Barlow',-apple-system,sans-serif;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:var(--f-body);color:var(--text);background:var(--off);line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--teal-text);text-decoration:underline;text-underline-offset:2px}
+a:hover{color:var(--teal-dk)}
+*:focus-visible{outline:2px solid var(--teal-dk);outline-offset:3px;border-radius:4px}
+nav{padding:1rem 2.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--white)}
+.nav-logo{font-family:var(--f-head);font-size:1.5rem;font-weight:700;color:var(--navy);text-decoration:none;text-transform:uppercase;letter-spacing:.02em}
+.nav-logo span{color:var(--teal-text)}
+.nav-back{font-size:.88rem;font-weight:500;color:var(--text-mid);text-decoration:none;display:flex;align-items:center;gap:.4rem}
+.nav-back:hover{color:var(--navy)}
+.legal{max-width:720px;margin:0 auto;padding:4rem 2rem 6rem}
+.legal h1{font-family:var(--f-head);font-weight:900;font-size:clamp(2rem,4vw,3rem);color:var(--navy);text-transform:uppercase;margin-bottom:.5rem}
+.legal .effective{font-size:.85rem;color:var(--text-dim);margin-bottom:3rem}
+.legal h2{font-family:var(--f-head);font-weight:700;font-size:1.3rem;color:var(--navy);text-transform:uppercase;margin:2.5rem 0 .75rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+.legal h2:first-of-type{border-top:none;padding-top:0}
+.legal p{font-size:.95rem;color:var(--text-mid);margin-bottom:1rem;line-height:1.8}
+.legal ul{margin:0 0 1rem 1.5rem;font-size:.95rem;color:var(--text-mid);line-height:1.8}
+.legal li{margin-bottom:.35rem}
+.legal strong{color:var(--text);font-weight:600}
+.legal .callout{background:var(--teal-lt);border-left:3px solid var(--teal);padding:1.25rem 1.5rem;border-radius:0 8px 8px 0;margin:1.5rem 0}
+.legal .callout p{margin-bottom:0;color:var(--text)}
+footer{padding:2.5rem 0;background:var(--navy);border-top:1px solid rgba(255,255,255,.06)}
+.footer-inner{max-width:1200px;margin:0 auto;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.25rem}
+.footer-left{font-size:.8rem;color:var(--light-body);line-height:1.7}
+.footer-left a{color:var(--light-head);text-decoration:underline;text-decoration-color:rgba(167,190,198,.3);text-underline-offset:2px}
+.footer-left a:hover{color:var(--teal)}
+.footer-links{display:flex;gap:1.5rem;list-style:none;flex-wrap:wrap}
+.footer-links a{font-size:.8rem;color:var(--light-body);text-decoration:none}
+.footer-links a:hover{color:var(--light-head)}
+@media(max-width:768px){
+  nav{padding:.85rem 1.25rem}
+  .legal{padding:3rem 1.5rem 4rem}
+  .footer-inner{flex-direction:column;text-align:center}
+  .footer-links{justify-content:center;gap:1rem}
+}
+</style>
+</head>
+<body>
+
+<nav role="navigation" aria-label="Page navigation">
+  <a href="index.html" class="nav-logo" aria-label="SoilCensus home">Soil<span>Census</span></a>
+  <a href="index.html" class="nav-back">← Back to Home</a>
+</nav>
+
+<main>
+<article class="legal">
+  <h1>Data Licensing</h1>
+  <p class="effective">Effective Date: March 2026</p>
+
+  <p>The SoilCensus aggregate dataset is a growing, georeferenced collection of soil microbiome data contributed by citizen scientists across the United States. This page explains what the dataset contains, how it is licensed, and how researchers and institutions can access it.</p>
+
+  <h2>1. What the Dataset Contains</h2>
+  <p>The SoilCensus aggregate dataset includes the following for each sample:</p>
+  <ul>
+    <li><strong>GPS coordinates</strong> of the sample collection site</li>
+    <li><strong>Land use classification</strong> (e.g., residential garden, agricultural field, park, forest)</li>
+    <li><strong>Collection date</strong> and season</li>
+    <li><strong>Microbial species identification</strong> — a complete list of taxa detected via DNA sequencing</li>
+    <li><strong>Diversity metrics</strong> — alpha diversity (within-sample richness) and beta diversity (cross-sample comparisons)</li>
+    <li><strong>Functional group analysis</strong> — relative abundance of nitrogen fixers, decomposers, mycorrhizal fungi, carbon cyclers, and other functional categories</li>
+    <li><strong>Pathogen detection</strong> — presence and relative abundance of known soil pathogens</li>
+  </ul>
+
+  <div class="callout">
+    <p><strong>The aggregate dataset does not contain any personally identifiable information.</strong> No names, email addresses, mailing addresses, or account information are included. Sample locations are GPS coordinates only — they are not linked to individual identities.</p>
+  </div>
+
+  <h2>2. Licensing Model</h2>
+  <p>The SoilCensus dataset is available under two access tiers:</p>
+  <p><strong>Research License.</strong> Available to accredited universities, government agencies, and nonprofit research institutions. The Research License grants access to the full aggregate dataset for non-commercial research purposes including academic publication. Pricing is scaled to institution size and may be subsidized or waived for qualifying projects. Contact us to discuss your research needs.</p>
+  <p><strong>Commercial License.</strong> Available to private companies, consultancies, and commercial organizations that wish to use the dataset for product development, commercial analysis, or integration into proprietary platforms. Commercial licensing terms and pricing are negotiated on a case-by-case basis.</p>
+
+  <h2>3. What You May Do with Licensed Data</h2>
+  <p>Under both license types, you may:</p>
+  <ul>
+    <li>Analyze the data for your licensed purposes</li>
+    <li>Publish findings, visualizations, and derivative analyses based on the data</li>
+    <li>Combine the data with other datasets for research or analysis</li>
+    <li>Store the data on your institutional servers for the duration of your license</li>
+  </ul>
+
+  <h2>4. What You May Not Do</h2>
+  <ul>
+    <li><strong>Redistribute the raw dataset.</strong> You may not share, resell, sublicense, or make the raw dataset available to third parties without written permission from Starrfly Labs LLC.</li>
+    <li><strong>Attempt to re-identify contributors.</strong> You may not attempt to link sample locations to individual contributors, addresses, or identities.</li>
+    <li><strong>Misrepresent the source.</strong> Publications and products that use SoilCensus data must credit "SoilCensus, a product of Starrfly Labs LLC" as the data source.</li>
+  </ul>
+
+  <h2>5. API Access</h2>
+  <p>Licensed institutions may access the dataset through the SoilCensus API, which provides programmatic access to sample data, spatial queries, time-series filtering, and diversity metrics. API documentation and credentials are provided upon license activation.</p>
+  <p>API rate limits and data refresh schedules are specified in your license agreement. The dataset is updated on a rolling basis as new samples are processed.</p>
+
+  <h2>6. Attribution</h2>
+  <p>Any published work, analysis, or product that incorporates SoilCensus data must include the following attribution:</p>
+  <div class="callout">
+    <p>"Data provided by SoilCensus (soilcensus.com), a product of Starrfly Labs LLC. The SoilCensus dataset is generated through citizen science contributions and crowdsourced soil sampling."</p>
+  </div>
+
+  <h2>7. Data Quality and Limitations</h2>
+  <p>SoilCensus data is collected by citizen scientists following standardized but simplified collection protocols. While we take steps to ensure data quality — including GPS verification, sample integrity checks, and lab processing standards — the dataset has inherent limitations:</p>
+  <ul>
+    <li>Sample locations are self-reported and GPS-captured; positional accuracy may vary</li>
+    <li>Sampling depth and technique may vary slightly between contributors</li>
+    <li>Geographic coverage depends on contributor participation and is not uniform</li>
+    <li>Taxonomic identification depends on current reference databases, which are continually updated</li>
+  </ul>
+  <p>We provide the dataset "as is" without warranty of fitness for any particular analytical purpose. Licensees are responsible for evaluating data quality within the context of their own research.</p>
+
+  <h2>8. Contributor Privacy</h2>
+  <p>The data licensing program is designed to ensure that individual contributors cannot be identified from the aggregate dataset. We do not include any personally identifiable information in licensed data. Our <a href="privacy.html">Privacy Policy</a> describes in detail how contributor data is handled and protected.</p>
+
+  <h2>9. Pricing and Terms</h2>
+  <p>Licensing fees vary by institution type, dataset scope, and intended use. We offer:</p>
+  <ul>
+    <li>Subsidized or no-cost access for qualifying academic and nonprofit research</li>
+    <li>Pilot access for institutions evaluating the dataset before committing to a full license</li>
+    <li>Custom agreements for large-scale commercial applications</li>
+  </ul>
+
+  <h2>10. Contact</h2>
+  <p>To discuss data licensing, request a sample dataset, or ask questions about the program, contact us at:</p>
+  <p><strong>Starrfly Labs LLC</strong><br>
+  <a href="mailto:hello@soilcensus.com">hello@soilcensus.com</a></p>
+  <p>We're particularly interested in conversations with researchers, land managers, university extension offices, conservation organizations, and anyone who thinks citizen-generated soil data can help solve a problem they're working on.</p>
+</article>
+</main>
+
+<footer role="contentinfo">
+  <div class="footer-inner">
+    <div class="footer-left">SoilCensus · <a href="mailto:hello@soilcensus.com">hello@soilcensus.com</a><br>A product of <a href="https://starrflylabs.com" target="_blank" rel="noopener noreferrer">Starrfly Labs LLC</a></div>
+    <ul class="footer-links" aria-label="Legal links">
+      <li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms of Use</a></li><li><a href="data-licensing.html">Data Licensing</a></li>
+      <li><a href="https://starrflylabs.com" target="_blank" rel="noopener noreferrer">Built by Starrfly Labs <span aria-hidden="true">↗</span></a></li>
+    </ul>
+  </div>
+</footer>
+</body>
+</html>

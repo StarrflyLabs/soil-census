@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="SoilCensus maps the invisible world of soil microbes — one sample at a time. Request a kit, collect a sample, and discover what's living in your soil.">
+<title>SoilCensus — What's Living in Your Soil?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;0,900;1,300;1,400&family=Barlow+Condensed:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --white: #FFFFFF;
+  --off: #F7F9F9;
+  --teal: #2BBFAD;           /* decorative + button bg (bold text 3.1:1 = AA large) */
+  --teal-text: #0C6B61;      /* AA text on white — 6.2:1 */
+  --teal-dk: #1E9D8E;        /* hover/active accent */
+  --teal-lt: #E6F8F6;
+  --navy: #1A2E35;
+  --text: #1A2E35;
+  --text-mid: #3D5560;       /* 5.8:1 on white */
+  --text-dim: #4E6870;       /* 4.6:1 on white */
+  --border: #D4DFE1;
+  /* Dark section text (on --navy bg) */
+  --light-head: #F7F9F9;     /* 13.2:1 on navy */
+  --light-body: #A7BEC6;     /* 5.2:1 on navy */
+  --light-dim: #7A9BA6;      /* 3.8:1 on navy — large text only */
+  --f-head: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --f-body: 'Barlow', -apple-system, sans-serif;
+}
+
+/* ─── ACCESSIBILITY ─── */
+.skip-link {
+  position: absolute; top: -100%; left: 50%; transform: translateX(-50%);
+  background: var(--teal-dk); color: white; padding: 0.75rem 1.5rem;
+  border-radius: 0 0 8px 8px; font-weight: 600; font-size: 0.9rem;
+  z-index: 9999; text-decoration: none; transition: top 0.2s;
+}
+.skip-link:focus { top: 0; }
+
+*:focus-visible {
+  outline: 2px solid var(--teal-dk);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+}
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: var(--f-body);
+  color: var(--text);
+  background: var(--off);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--f-head);
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: var(--navy);
+}
+
+.section-label {
+  font-family: var(--f-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--teal-text); /* 6.2:1 on white */
+  margin-bottom: 1rem;
+}
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+
+/* ─── NAV ─── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  padding: 1rem 2.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+nav.scrolled {
+  background: rgba(247, 249, 249, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+  padding: 0.75rem 2.5rem;
+}
+
+.nav-logo {
+  font-family: var(--f-head);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--navy);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.nav-logo span { color: var(--teal-text); }
+
+.nav-links { display: flex; align-items: center; gap: 2.25rem; list-style: none; }
+
+.nav-links a {
+  font-size: 0.88rem; font-weight: 500; color: var(--text-mid); /* 5.8:1 on white */
+  text-decoration: none; transition: color 0.3s;
+}
+
+.nav-links a:hover { color: var(--navy); }
+.nav-links a.btn--primary:hover { color: var(--white); }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-family: var(--f-body); font-size: 0.88rem; font-weight: 700;
+  padding: 0.65rem 1.5rem; border-radius: 8px;
+  text-decoration: none; cursor: pointer; border: none;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Button: bold white on --teal — matches Starrfly Labs */
+.btn--primary { background: var(--teal); color: var(--white); border: 1.5px solid var(--teal); }
+.nav-links .btn--primary { color: var(--white); }
+
+.btn--primary:hover {
+  background: var(--teal-dk);
+  border-color: var(--teal-dk);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(43, 191, 173, 0.3);
+}
+
+.btn--disabled {
+  pointer-events: none;
+  cursor: default;
+}
+.btn--disabled:hover { transform: none; box-shadow: none; }
+
+.btn-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.btn-soon {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  letter-spacing: 0.02em;
+}
+
+.btn--large { font-size: 0.95rem; padding: 0.85rem 2rem; border-radius: 10px; }
+
+.btn--outline {
+  background: transparent; color: var(--text); /* 13.7:1 on white */
+  border: 1.5px solid var(--border); border-radius: 10px;
+}
+
+.btn--outline:hover { border-color: var(--teal); color: var(--teal-text); }
+
+.btn-arrow { transition: transform 0.3s; display: inline-block; }
+.btn:hover .btn-arrow { transform: translateX(3px); }
+
+/* ─── MOBILE TOGGLE ─── */
+.mobile-toggle {
+  display: none; background: none; border: none; cursor: pointer;
+  width: 44px; height: 44px; position: relative; z-index: 1001;
+}
+.mobile-toggle span {
+  display: block; width: 20px; height: 2px; background: var(--navy);
+  position: absolute; left: 12px; transition: all 0.3s;
+}
+.mobile-toggle span:nth-child(1) { top: 14px; }
+.mobile-toggle span:nth-child(2) { top: 21px; }
+.mobile-toggle span:nth-child(3) { top: 28px; }
+.mobile-toggle.active span:nth-child(1) { top: 21px; transform: rotate(45deg); }
+.mobile-toggle.active span:nth-child(2) { opacity: 0; }
+.mobile-toggle.active span:nth-child(3) { top: 21px; transform: rotate(-45deg); }
+
+/* ─── HERO ─── */
+.hero {
+  min-height: 100vh;
+  display: flex; align-items: center;
+  position: relative; overflow: hidden;
+  background: var(--off);
+}
+
+.hero-bg { position: absolute; inset: 0; }
+.hero-bg canvas { width: 100%; height: 100%; display: block; }
+
+.hero-overlay {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 48% 38% at 50% 52%, rgba(247,249,249,0.65) 0%, rgba(247,249,249,0.2) 55%, transparent 100%),
+    linear-gradient(to bottom, rgba(247,249,249,0.2) 0%, transparent 10%),
+    linear-gradient(to top, rgba(247,249,249,0.4) 0%, transparent 12%);
+}
+
+.hero-content {
+  position: relative; z-index: 2;
+  max-width: 780px; padding: 8rem 2rem 4rem; margin: 0 auto; text-align: center;
+}
+
+.hero h1 {
+  font-size: clamp(3rem, 7vw, 5.8rem);
+  font-weight: 900;
+  color: var(--navy);
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  opacity: 0; transform: translateY(30px);
+  animation: fadeUp 0.9s 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.hero h1 em {
+  font-style: italic;
+  font-family: var(--f-body);
+  font-weight: 300;
+  color: var(--teal-text); /* 6.2:1 on off-white bg */
+}
+
+.hero-sub {
+  font-size: clamp(1rem, 1.6vw, 1.12rem);
+  color: var(--text-mid); /* 5.8:1 */
+  max-width: 560px; margin: 0 auto 2.5rem;
+  line-height: 1.8; font-weight: 400;
+  opacity: 0; transform: translateY(20px);
+  animation: fadeUp 0.9s 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.hero-actions {
+  display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; align-items: flex-start;
+  opacity: 0; transform: translateY(20px);
+  animation: fadeUp 0.9s 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.hero-proof {
+  margin-top: 2.5rem; font-size: 0.82rem;
+  color: var(--text-dim); /* 4.6:1 on off */
+  opacity: 0; animation: fadeUp 0.9s 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+.reveal {
+  opacity: 0; transform: translateY(32px);
+  transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ─── HOW IT WORKS ─── */
+.how-it-works {
+  padding: 6rem 0; background: var(--white);
+  border-top: 1px solid var(--border);
+}
+
+.how-header { text-align: center; margin-bottom: 4rem; }
+
+.how-header h2 {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+}
+
+.steps-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;
+  position: relative;
+}
+
+.steps-grid::before {
+  content: ''; position: absolute;
+  top: 28px; left: 12.5%; right: 12.5%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--border), var(--teal), var(--border));
+  opacity: 0.35;
+}
+
+.step { text-align: center; position: relative; }
+
+.step-number {
+  width: 56px; height: 56px; border-radius: 14px;
+  background: var(--teal-lt);
+  border: 2px solid var(--border);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--f-head); font-size: 1.2rem; font-weight: 700;
+  color: var(--teal-text); /* 6.2:1 on teal-lt (even higher) */
+  margin-bottom: 1.5rem;
+  position: relative; z-index: 1;
+  transition: all 0.35s;
+}
+
+.step:hover .step-number {
+  background: var(--teal); color: white; border-color: var(--teal);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(43, 191, 173, 0.25);
+}
+
+.step h3 {
+  font-size: 1.1rem; font-weight: 700; margin-bottom: 0.6rem;
+  text-transform: none;
+}
+
+.step p {
+  font-size: 0.9rem; color: var(--text-mid); /* 5.8:1 */
+  line-height: 1.7; font-weight: 400;
+}
+
+/* ─── MAP SECTION ─── */
+.map-section {
+  padding: 6rem 0; background: var(--navy);
+  position: relative; overflow: hidden;
+}
+
+.map-section .section-label { color: var(--teal); } /* decorative accent on dark bg — ok */
+
+.map-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+
+.map-text h2 {
+  font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+  color: var(--light-head); /* 13.2:1 on navy */
+  margin-bottom: 1.5rem;
+}
+
+.map-text p {
+  font-size: 0.95rem; color: var(--light-body); /* 5.2:1 on navy ✓ */
+  line-height: 1.8; margin-bottom: 1.2rem; font-weight: 400;
+}
+
+.map-text p:last-of-type {
+  font-weight: 300; font-style: italic;
+  font-size: 1.05rem;
+  color: var(--light-head); /* high contrast for emphasis */
+}
+
+.map-visual {
+  aspect-ratio: 4/3; border-radius: 16px; overflow: hidden;
+  background: #223940;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.map-visual canvas { width: 100%; height: 100%; display: block; }
+
+/* ─── RESULTS ─── */
+.results-section { padding: 6rem 0; background: var(--off); }
+
+.results-header { max-width: 580px; margin-bottom: 3rem; }
+
+.results-header h2 {
+  font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+  margin-bottom: 1rem;
+}
+
+.results-header h2 em {
+  font-family: var(--f-body); font-weight: 300; font-style: italic;
+  text-transform: none; color: var(--teal-text);
+}
+
+.results-header p {
+  font-size: 1rem; color: var(--text-mid); /* 5.8:1 */
+  font-weight: 400; line-height: 1.75;
+}
+
+.results-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+
+.result-card {
+  background: var(--white); border-radius: 14px; padding: 1.75rem 1.5rem;
+  border: 1px solid var(--border);
+  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.result-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.06);
+  border-color: transparent;
+}
+
+.result-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.ri-teal { background: var(--teal-lt); color: var(--teal-text); }
+.ri-warm { background: rgba(26, 46, 53, 0.06); color: var(--navy); }
+.ri-stone { background: rgba(78, 104, 112, 0.08); color: var(--text-dim); }
+
+.result-card h4 {
+  font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem;
+  font-family: var(--f-body); text-transform: none;
+}
+
+.result-card p { font-size: 0.85rem; color: var(--text-mid); line-height: 1.65; }
+
+/* ─── AUDIENCE ─── */
+.audience-section { padding: 6rem 0; background: var(--white); }
+
+.audience-header { text-align: center; max-width: 620px; margin: 0 auto 3.5rem; }
+
+.audience-header h2 {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  text-transform: none;
+}
+
+.audience-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+
+.audience-card {
+  padding: 2rem; border-radius: 14px; background: var(--off);
+  border: 1px solid var(--border);
+  transition: all 0.35s; position: relative; overflow: hidden;
+}
+
+.audience-card::after {
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 3px; height: 0; background: var(--teal);
+  transition: height 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.audience-card:hover::after { height: 100%; }
+
+.audience-card:hover {
+  border-color: transparent;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.05);
+  background: var(--white);
+}
+
+.audience-tag {
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--teal-text); /* 6.2:1 */
+  margin-bottom: 0.5rem;
+}
+
+.audience-card h3 {
+  font-size: 1.2rem; margin-bottom: 0.6rem;
+  font-family: var(--f-body); font-weight: 600; text-transform: none;
+}
+
+.audience-card p { font-size: 0.9rem; color: var(--text-mid); line-height: 1.7; }
+
+/* ─── PRICING ─── */
+.pricing-section { padding: 6rem 0; background: var(--off); }
+
+.pricing-card {
+  max-width: 560px; margin: 0 auto; background: var(--white);
+  border-radius: 18px; padding: 3rem; text-align: center;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 32px rgba(0,0,0,0.04);
+}
+
+.pricing-card h2 { font-size: 2.4rem; margin-bottom: 0.4rem; }
+
+.pricing-card .price-note {
+  font-size: 0.88rem; color: var(--text-dim); /* 4.6:1 */
+  margin-bottom: 2rem;
+}
+
+.pricing-includes { text-align: left; list-style: none; margin-bottom: 2rem; }
+
+.pricing-includes li {
+  padding: 0.6rem 0; font-size: 0.9rem; color: var(--text-mid); /* 5.8:1 */
+  display: flex; align-items: flex-start; gap: 0.85rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.pricing-includes li:last-child { border-bottom: none; }
+
+.pricing-includes li::before {
+  content: ''; width: 20px; height: 20px; min-width: 20px;
+  border-radius: 6px; margin-top: 2px;
+  background: var(--teal) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E") center/11px no-repeat;
+}
+
+.pricing-community {
+  margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border);
+  font-size: 0.85rem; color: var(--text-dim); /* 4.6:1 */
+  line-height: 1.7;
+}
+
+.pricing-community a {
+  color: var(--teal-text); /* 6.2:1 */
+  text-decoration: underline; text-underline-offset: 2px; font-weight: 600;
+}
+
+/* ─── FAQ ─── */
+.faq-section { padding: 6rem 0; background: var(--white); }
+
+.faq-header { text-align: center; margin-bottom: 3rem; }
+.faq-header h2 { font-size: clamp(1.8rem, 3.5vw, 2.6rem); }
+
+.faq-list { max-width: 720px; margin: 0 auto; }
+
+.faq-item { border-bottom: 1px solid var(--border); }
+
+.faq-question {
+  width: 100%; background: none; border: none;
+  padding: 1.25rem 0; display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 1.5rem; cursor: pointer;
+  font-family: var(--f-body); font-size: 1rem; font-weight: 600;
+  color: var(--text); /* 13.7:1 */
+  text-align: left; line-height: 1.4;
+  transition: color 0.3s; min-height: 48px;
+}
+
+.faq-question:hover { color: var(--teal-text); }
+
+.faq-icon {
+  width: 28px; height: 28px; min-width: 28px; border-radius: 8px;
+  border: 1.5px solid var(--border); display: flex; align-items: center;
+  justify-content: center; transition: all 0.35s; margin-top: 1px;
+}
+
+.faq-icon svg {
+  width: 11px; height: 11px; stroke: var(--text-dim);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.faq-item.open .faq-icon { background: var(--teal); border-color: var(--teal); }
+.faq-item.open .faq-icon svg { stroke: white; transform: rotate(45deg); }
+
+.faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+
+.faq-answer-inner {
+  padding: 0 0 1.25rem; font-size: 0.92rem;
+  color: var(--text-mid); /* 5.8:1 */
+  line-height: 1.75;
+}
+
+/* ─── FOOTER CTA ─── */
+.footer-cta {
+  padding: 6rem 0; background: var(--navy); text-align: center;
+  position: relative; overflow: hidden;
+}
+
+.footer-cta-shape { position: absolute; border-radius: 50%; opacity: 0.06; }
+.footer-cta-shape--1 { width: 500px; height: 500px; background: var(--teal); top: -30%; left: -10%; }
+.footer-cta-shape--2 { width: 350px; height: 350px; background: var(--teal-dk); bottom: -20%; right: -5%; }
+
+.footer-cta h2 {
+  font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+  color: var(--light-head); /* 13.2:1 on navy */
+  margin-bottom: 1rem;
+  position: relative; z-index: 1;
+}
+
+.footer-cta p {
+  font-size: 1rem; color: var(--light-body); /* 5.2:1 on navy */
+  max-width: 480px; margin: 0 auto 2.5rem; line-height: 1.75;
+  position: relative; z-index: 1;
+}
+
+.footer-cta .btn { position: relative; z-index: 1; }
+
+/* ─── FOOTER ─── */
+footer {
+  padding: 2.5rem 0; background: var(--navy);
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.footer-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 1.25rem;
+}
+
+.footer-left {
+  font-size: 0.8rem;
+  color: var(--light-body); /* 5.2:1 on navy */
+  line-height: 1.7;
+}
+
+.footer-left a {
+  color: var(--light-head); /* 13.2:1 on navy */
+  text-decoration: underline; text-decoration-color: rgba(167,190,198,.3);
+  text-underline-offset: 2px; transition: color 0.3s;
+}
+
+.footer-left a:hover { color: var(--teal); }
+
+.footer-links { display: flex; gap: 1.5rem; list-style: none; flex-wrap: wrap; }
+
+.footer-links a {
+  font-size: 0.8rem;
+  color: var(--light-body); /* 5.2:1 on navy */
+  text-decoration: none; transition: color 0.3s; padding: 0.25rem 0;
+}
+
+.footer-links a:hover { color: var(--light-head); }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 1024px) {
+  .steps-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+  .steps-grid::before { display: none; }
+  .map-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .results-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  nav { padding: 0.85rem 1.25rem; }
+  nav.scrolled { padding: 0.7rem 1.25rem; }
+
+  .nav-links {
+    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--off); flex-direction: column;
+    justify-content: center; align-items: center; gap: 1.75rem; z-index: 999;
+  }
+  .nav-links.open { display: flex; }
+  .nav-links a { font-size: 1.1rem; padding: 0.5rem 0; }
+  .nav-links .btn { font-size: 1rem; padding: 0.85rem 2rem; }
+
+  .mobile-toggle { display: block; }
+
+  .hero { min-height: 100svh; }
+  .hero-content { padding: 6.5rem 1.5rem 3rem; }
+
+  .how-it-works, .map-section, .results-section, .audience-section,
+  .pricing-section, .faq-section, .footer-cta { padding: 4.5rem 0; }
+
+  .how-header { margin-bottom: 2.5rem; }
+  .steps-grid { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+  .results-grid, .audience-grid { grid-template-columns: 1fr; }
+
+  .pricing-card { padding: 2rem 1.5rem; }
+  .faq-question { font-size: 0.95rem; }
+
+  .container { padding: 0 1.5rem; }
+
+  .footer-inner { flex-direction: column; text-align: center; }
+  .footer-links { justify-content: center; gap: 1rem; }
+}
+
+@media (max-width: 480px) {
+  .hero h1 { font-size: 2.4rem; }
+  .steps-grid { grid-template-columns: 1fr; max-width: 340px; margin: 0 auto; }
+  .hero-actions { flex-direction: column; align-items: center; }
+  .hero-actions .btn { width: 100%; max-width: 280px; justify-content: center; }
+  .footer-links { flex-direction: column; gap: 0.5rem; }
+}
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<nav id="nav" role="navigation" aria-label="Main navigation">
+  <a href="#" class="nav-logo" aria-label="SoilCensus home">Soil<span>Census</span></a>
+  <ul class="nav-links" id="navLinks" role="menubar">
+    <li role="none"><a href="#how-it-works" role="menuitem" onclick="closeMenu()">How It Works</a></li>
+    <li role="none"><a href="#the-map" role="menuitem" onclick="closeMenu()">The Map</a></li>
+    <li role="none"><a href="#pricing" role="menuitem" onclick="closeMenu()">Pricing</a></li>
+    <li role="none"><div class="btn-wrap"><span class="btn btn--primary btn--disabled" role="menuitem">Request a Kit</span><span class="btn-soon">Coming Soon</span></div></li>
+  </ul>
+  <button class="mobile-toggle" id="mobileToggle" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<main id="main-content">
+<section class="hero" id="hero" aria-label="Introduction">
+  <div class="hero-bg" aria-hidden="true">
+    <canvas id="heroMapCanvas"></canvas>
+    <div class="hero-overlay"></div>
+  </div>
+  <div class="hero-content">
+    <h1>What's living in <em>your soil?</em></h1>
+    <p class="hero-sub">SoilCensus maps the invisible world of microbes beneath our feet — one sample at a time. Request a kit, collect a sample from your backyard, garden, or land, and discover what's been there all along.</p>
+    <div class="hero-actions">
+      <div class="btn-wrap"><span class="btn btn--primary btn--large btn--disabled">Request a Kit</span><span class="btn-soon">Coming Soon</span></div>
+      <a href="#how-it-works" class="btn btn--outline btn--large">See How It Works</a>
+    </div>
+    <p class="hero-proof">Be one of our first contributors mapping the living world beneath their feet.</p>
+  </div>
+</section>
+
+<section class="how-it-works" id="how-it-works" aria-label="How it works">
+  <div class="container">
+    <div class="how-header reveal">
+      <div class="section-label">Simple by design</div>
+      <h2>Four Steps to Knowing Your Soil</h2>
+    </div>
+    <div class="steps-grid" role="list">
+      <div class="step reveal" style="transition-delay:0.1s" role="listitem"><div class="step-number" aria-hidden="true">1</div><h3>Request a kit</h3><p>Tell us where you want to sample. We'll mail you everything you need — a sample tube, instructions, and a prepaid return mailer.</p></div>
+      <div class="step reveal" style="transition-delay:0.2s" role="listitem"><div class="step-number" aria-hidden="true">2</div><h3>Collect your sample</h3><p>Choose a spot. Dig a few inches. Fill the tube. It takes about five minutes. Your GPS coordinates are captured automatically.</p></div>
+      <div class="step reveal" style="transition-delay:0.3s" role="listitem"><div class="step-number" aria-hidden="true">3</div><h3>Drop it in the mail</h3><p>Seal the prepaid mailer and leave it for your carrier. No post office trip. It goes directly to our lab partner for DNA sequencing.</p></div>
+      <div class="step reveal" style="transition-delay:0.4s" role="listitem"><div class="step-number" aria-hidden="true">4</div><h3>See your results</h3><p>Within two to three weeks, your results page is ready — microbial species, diversity scores, and what your microbiome is doing.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="map-section" id="the-map" aria-label="The map">
+  <div class="container">
+    <div class="map-grid">
+      <div class="map-text reveal">
+        <div class="section-label">Every sample makes it better</div>
+        <h2>A Map That Didn't Exist Before You</h2>
+        <p>No satellite has ever seen a soil microbiome. No government survey has sampled at this resolution. The map we're building together — backyard by backyard, farm by farm — is genuinely new.</p>
+        <p>Researchers use it to understand how land use affects microbial diversity. City planners track soil health across parks. Farmers compare their land to neighboring parcels.</p>
+        <p>The more people contribute, the more useful it becomes — for everyone.</p>
+      </div>
+      <div class="map-visual reveal" style="transition-delay:0.2s" role="img" aria-label="Visualization of soil sample data points">
+        <canvas id="mapCanvas" aria-hidden="true"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="results-section" id="results" aria-label="Your results">
+  <div class="container">
+    <div class="results-header reveal">
+      <div class="section-label">What you get back</div>
+      <h2>Your Soil Has a <em>Story</em></h2>
+      <p>Your results page includes everything we learned from your sample — explained in plain language, not lab reports.</p>
+    </div>
+    <div class="results-grid">
+      <div class="result-card reveal" style="transition-delay:0.05s"><div class="result-icon ri-teal" aria-hidden="true"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg></div><h4>Species detected</h4><p>How many distinct microbial species we found and what that tells you about your soil's health.</p></div>
+      <div class="result-card reveal" style="transition-delay:0.1s"><div class="result-icon ri-warm" aria-hidden="true"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 16l4-6 4 4 5-8"/></svg></div><h4>Diversity comparison</h4><p>How your sample compares to others in your area — expressed as a simple percentile, not a raw number.</p></div>
+      <div class="result-card reveal" style="transition-delay:0.15s"><div class="result-icon ri-stone" aria-hidden="true"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 000 20m0-20c2.5 2.8 4 6.2 4 10s-1.5 7.2-4 10m0-20c-2.5 2.8-4 6.2-4 10s1.5 7.2 4 10"/><path d="M2 12h20"/></svg></div><h4>Dominant groups</h4><p>Which microbial groups dominate your soil — nitrogen fixers, decomposers, carbon builders, and more.</p></div>
+      <div class="result-card reveal" style="transition-delay:0.2s"><div class="result-icon ri-teal" aria-hidden="true"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 22c5.5 0 10-4.5 10-10S17.5 2 12 2 2 6.5 2 12s4.5 10 10 10z"/><path d="M8 12l3 3 5-5"/></svg></div><h4>Soil functions</h4><p>Which functions are active, moderate, or low — with plain-language explanations for what you're growing.</p></div>
+      <div class="result-card reveal" style="transition-delay:0.25s"><div class="result-icon ri-warm" aria-hidden="true"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><h4>Pathogen screen</h4><p>Which known soil pathogens were detected and at what levels — a clear picture of potential risks.</p></div>
+      <div class="result-card reveal" style="transition-delay:0.3s"><div class="result-icon ri-stone" aria-hidden="true"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg></div><h4>Practical recommendations</h4><p>Specific next steps based on your results. Your data is yours — download, share, or use however you like.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="audience-section" id="audience" aria-label="Who SoilCensus is for">
+  <div class="container">
+    <div class="audience-header reveal">
+      <div class="section-label">Who it's for</div>
+      <h2>For anyone with soil and a curiosity about what's in it.</h2>
+    </div>
+    <div class="audience-grid">
+      <div class="audience-card reveal" style="transition-delay:0.05s"><div class="audience-tag">Gardeners &amp; Homeowners</div><h3>You care what's in your soil.</h3><p>Whether you're growing vegetables, restoring a lawn, or just curious — your soil has a story worth knowing. SoilCensus tells it in language that makes sense.</p></div>
+      <div class="audience-card reveal" style="transition-delay:0.1s"><div class="audience-tag">Small Farms &amp; Homesteads</div><h3>Know your land at a level no soil test ever showed you.</h3><p>Traditional tests measure nutrients. SoilCensus measures the organisms that cycle them — the bacteria, fungi, and decomposers that drive your soil's biology.</p></div>
+      <div class="audience-card reveal" style="transition-delay:0.15s"><div class="audience-tag">Community Gardens</div><h3>Map your whole garden — not just one plot.</h3><p>Sample each bed, each section, or each growing year, and watch the map show you how your soil changes over time. Group pricing and free pilot kits available.</p></div>
+      <div class="audience-card reveal" style="transition-delay:0.2s"><div class="audience-tag">Researchers &amp; Institutions</div><h3>The dataset you couldn't build any other way.</h3><p>Georeferenced, time-series microbiome data across land types and geographies at unprecedented resolution. API access and data licensing available.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing-section" id="pricing" aria-label="Pricing">
+  <div class="container">
+    <div class="reveal" style="text-align:center"><div class="section-label">Simple pricing</div></div>
+    <div class="pricing-card reveal" style="transition-delay:0.1s">
+      <h2>Coming Soon</h2>
+      <p class="price-note">Everything included. Nothing extra to buy.</p>
+      <ul class="pricing-includes" aria-label="What's included">
+        <li>Sample tube and collection tool</li>
+        <li>Illustrated instruction card</li>
+        <li>Prepaid return mailer addressed to our lab</li>
+        <li>Full results page with your microbiome profile</li>
+        <li>Permanent placement on the SoilCensus map</li>
+        <li>Downloadable results in PDF and data formats</li>
+      </ul>
+      <div class="btn-wrap"><span class="btn btn--primary btn--large btn--disabled" style="width:100%;justify-content:center;">Request a Kit</span><span class="btn-soon">Coming Soon</span></div>
+      <p class="pricing-community">Community gardens, schools, and research institutions may qualify for subsidized or free kits. <a href="mailto:hello@soilcensus.com">Contact us</a> to learn more.</p>
+    </div>
+  </div>
+</section>
+
+<section class="faq-section" id="faq" aria-label="Frequently asked questions">
+  <div class="container">
+    <div class="faq-header reveal"><div class="section-label">Questions</div><h2>Frequently Asked</h2></div>
+    <div class="faq-list" role="list">
+      <div class="faq-item reveal" role="listitem"><button class="faq-question" aria-expanded="false">Do I need any special skills or equipment?<span class="faq-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span></button><div class="faq-answer" role="region"><div class="faq-answer-inner">No. The kit includes everything you need and the instructions are illustrated step by step. If you can dig a small hole with a stick, you can collect a sample.</div></div></div>
+      <div class="faq-item reveal" role="listitem"><button class="faq-question" aria-expanded="false">How much soil do you need?<span class="faq-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span></button><div class="faq-answer" role="region"><div class="faq-answer-inner">About two tablespoons — roughly what fits in the tube we provide. The sample should come from a consistent depth (we recommend 4 inches) and be free of large debris like rocks or roots.</div></div></div>
+      <div class="faq-item reveal" role="listitem"><button class="faq-question" aria-expanded="false">How long does it take to get results?<span class="faq-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span></button><div class="faq-answer" role="region"><div class="faq-answer-inner">From the day your sample arrives at the lab, expect two to three weeks. We'll email you at each stage — when the lab receives your sample, when processing begins, and when results are ready.</div></div></div>
+      <div class="faq-item reveal" role="listitem"><button class="faq-question" aria-expanded="false">What if my sample gets lost or damaged?<span class="faq-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span></button><div class="faq-answer" role="region"><div class="faq-answer-inner">Contact us and we'll send a replacement kit at no charge. It happens occasionally and it's not your problem to solve.</div></div></div>
+      <div class="faq-item reveal" role="listitem"><button class="faq-question" aria-expanded="false">Will the results tell me what to do with my soil?<span class="faq-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span></button><div class="faq-answer" role="region"><div class="faq-answer-inner">Yes, within reason. Your results include practical recommendations — whether your soil would benefit from a mycorrhizal inoculant, whether your nitrogen cycle is active, and what your decomposer community looks like. A good extension agent can take your results and go deeper.</div></div></div>
+      <div class="faq-item reveal" role="listitem"><button class="faq-question" aria-expanded="false">Who can see my results?<span class="faq-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span></button><div class="faq-answer" role="region"><div class="faq-answer-inner">Your precise coordinates and personal information are never publicly displayed. The public map shows a pin with the diversity score and land use type — no name, no address. You can also keep your sample entirely private.</div></div></div>
+      <div class="faq-item reveal" role="listitem"><button class="faq-question" aria-expanded="false">Can I sample the same spot multiple times?<span class="faq-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span></button><div class="faq-answer" role="region"><div class="faq-answer-inner">Yes — and we encourage it. A single sample is a snapshot. Multiple samples from the same location over time become a time series, showing how your soil health changes with seasons and practices.</div></div></div>
+      <div class="faq-item reveal" role="listitem"><button class="faq-question" aria-expanded="false">What happens to my data?<span class="faq-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span></button><div class="faq-answer" role="region"><div class="faq-answer-inner">Your sample data generates your personal results and contributes to the aggregate dataset, used for research under data licensing. We never sell personal information. Location data is stored securely and never shared at the individual level.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="footer-cta" id="request" aria-label="Request a kit">
+  <div class="footer-cta-shape footer-cta-shape--1" aria-hidden="true"></div>
+  <div class="footer-cta-shape footer-cta-shape--2" aria-hidden="true"></div>
+  <div class="container"><div class="reveal">
+    <h2>Your Soil Is Waiting</h2>
+    <p>It takes five minutes to collect a sample and a few weeks to find out what's been living there all along. The map is growing. Your spot isn't on it yet.</p>
+    <div class="btn-wrap"><span class="btn btn--primary btn--large btn--disabled">Request a Kit</span><span class="btn-soon" style="color:var(--light-body);">Coming Soon</span></div>
+  </div></div>
+</section>
+</main>
+
+<footer role="contentinfo">
+  <div class="container"><div class="footer-inner">
+    <div class="footer-left">SoilCensus · <a href="mailto:hello@soilcensus.com">hello@soilcensus.com</a><br>A product of <a href="https://starrflylabs.com" target="_blank" rel="noopener noreferrer">Starrfly Labs LLC</a></div>
+    <ul class="footer-links" aria-label="Legal links">
+      <li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms of Use</a></li><li><a href="data-licensing.html">Data Licensing</a></li>
+      <li><a href="https://starrflylabs.com" target="_blank" rel="noopener noreferrer">Built by Starrfly Labs <span aria-hidden="true">↗</span></a></li>
+    </ul>
+  </div></div>
+</footer>
+
+<script>
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',window.scrollY>60));
+
+const mobileToggle=document.getElementById('mobileToggle'),navLinks=document.getElementById('navLinks');
+mobileToggle.addEventListener('click',()=>{
+  const o=navLinks.classList.toggle('open');
+  mobileToggle.classList.toggle('active',o);
+  mobileToggle.setAttribute('aria-expanded',o);
+  mobileToggle.setAttribute('aria-label',o?'Close menu':'Open menu');
+  document.body.style.overflow=o?'hidden':'';
+});
+function closeMenu(){navLinks.classList.remove('open');mobileToggle.classList.remove('active');mobileToggle.setAttribute('aria-expanded','false');mobileToggle.setAttribute('aria-label','Open menu');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&navLinks.classList.contains('open'))closeMenu();});
+
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+document.querySelectorAll('.faq-question').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const item=btn.parentElement,ans=item.querySelector('.faq-answer'),open=item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(o=>{o.classList.remove('open');o.querySelector('.faq-answer').style.maxHeight=null;o.querySelector('.faq-question').setAttribute('aria-expanded','false');});
+    if(!open){item.classList.add('open');ans.style.maxHeight=ans.scrollHeight+'px';btn.setAttribute('aria-expanded','true');}
+  });
+});
+
+document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'});closeMenu();}});});
+
+// ═══ HERO MAP ═══
+;(function(){
+  const canvas=document.getElementById('heroMapCanvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  let pins=[],roads=[],t=0,af;
+  function lonToX(lon){return(lon-(-125))/((-66)-(-125));}
+  function latToY(lat){return 1-(lat-24.5)/(49.5-24.5);}
+  const usBorderRaw=[[-124.7,48.4],[-124.6,47.8],[-124.2,46.9],[-124,46.2],[-123.9,46.15],[-124.1,45.5],[-124.2,44.6],[-124.4,43.4],[-124.5,42.8],[-124.3,42],[-124.2,41.7],[-124,40.4],[-123.8,39.5],[-123.5,38.5],[-123,37.8],[-122.5,37.5],[-122.4,36.9],[-121.9,36.6],[-121.3,35.8],[-120.8,35.4],[-120.6,34.8],[-120.2,34.5],[-119.5,34.4],[-118.6,34],[-118.2,33.8],[-117.3,33.1],[-117.1,32.7],[-116.6,32.7],[-115.5,32.7],[-114.7,32.7],[-114.6,32.5],[-113.2,32],[-111.1,31.3],[-109,31.3],[-108.2,31.3],[-108.2,31.8],[-106.5,31.8],[-106.4,31.75],[-105,30.8],[-104.7,30],[-104.1,29.4],[-103.3,29],[-103,28.9],[-102.3,29.8],[-101.4,29.7],[-100.7,29.1],[-100,28.6],[-99.5,27.5],[-99.1,26.5],[-97.8,26],[-97.4,25.9],[-97.2,25.9],[-97,26.4],[-97.1,27.8],[-96.8,28.2],[-96.4,28.7],[-95.5,29],[-95,29.2],[-94.7,29.4],[-94,29.7],[-93.3,29.6],[-92.5,29.5],[-91.8,29.5],[-91.3,29.1],[-90.6,29],[-89.6,29.1],[-89.4,29.2],[-89,29.1],[-88.8,28.9],[-89.2,29.3],[-89.4,29.8],[-89,30.2],[-88.5,30.2],[-87.5,30.3],[-86.5,30.4],[-85.8,30.2],[-85,29.9],[-84.3,29.9],[-83.7,29.5],[-83,29],[-82.5,28.5],[-82,27.5],[-81.8,26.7],[-81.5,25.9],[-81,25.1],[-80.4,25.2],[-80.1,25.8],[-80,26.5],[-80.1,27.2],[-80.3,28],[-80.5,28.8],[-80.8,29.7],[-81,30.5],[-81.2,31],[-81.3,31.5],[-81,32.1],[-80.5,32.5],[-79.8,33],[-79.1,33.5],[-78.5,33.9],[-77.9,34.3],[-77.1,34.7],[-76.5,35],[-76,35.4],[-75.7,35.8],[-75.5,36.1],[-75.9,36.6],[-76,37],[-76.3,37.6],[-76,38],[-75.6,38.5],[-75.1,38.8],[-75,39.2],[-74.8,39.5],[-74.2,39.6],[-74,40.5],[-73.9,40.8],[-73.7,41],[-73.4,41.2],[-72.7,41],[-72,41.3],[-71.4,41.5],[-71.1,41.5],[-70.7,41.7],[-70,42],[-69.9,41.7],[-70.6,41.5],[-70.7,41.7],[-70.2,42.1],[-69.9,42.8],[-70.6,43.1],[-70.2,43.6],[-69,44],[-68,44.4],[-67.2,44.7],[-67,45],[-67.1,45.2],[-67.8,47],[-68.3,47.3],[-69.1,47.4],[-70.7,46.4],[-71.5,45],[-74.7,45],[-76,44],[-76.8,43.6],[-78.7,43.3],[-79.1,43.2],[-79,42.8],[-80.5,42.3],[-81.7,42.2],[-82.5,41.7],[-83.1,42.1],[-83.5,42.3],[-82.6,42.9],[-82.2,43.5],[-82.5,44.5],[-83.5,45],[-84.1,45.5],[-84.8,45.9],[-84.6,46.5],[-85,46.8],[-86,46.7],[-86.7,46.5],[-87,46.5],[-87.7,47],[-87.8,46.5],[-87.8,45.4],[-87.6,45.1],[-87.8,44.6],[-87.7,43.7],[-87.5,42.5],[-87.5,41.7],[-87.5,41.7],[-87.8,42.5],[-87.7,43.7],[-87.8,44.6],[-87.6,45.1],[-87.8,45.4],[-88.2,45.5],[-88.8,46],[-89.1,46.2],[-90.1,46.6],[-90.4,46.6],[-90.4,47],[-89.5,48],[-89.6,48],[-90.8,48.2],[-91.5,48.1],[-92,48.6],[-93,48.6],[-94.5,48.7],[-95.2,49],[-97,49],[-100,49],[-104,49],[-109,49],[-113,49],[-116,49],[-117,49],[-120,49],[-122.7,49],[-122.9,48.8],[-123.1,48.5],[-122.7,48.2],[-122.5,48.1],[-122.8,47.7],[-123.1,48.1],[-123.5,48.2],[-124,48.3],[-124.7,48.4]];
+  const US=usBorderRaw.map(([lo,la])=>[lonToX(lo),latToY(la)]);
+  function inUS(nx,ny){let i2=false;for(let i=0,j=US.length-1;i<US.length;j=i++){const[xi,yi]=US[i],[xj,yj]=US[j];if(((yi>ny)!==(yj>ny))&&(nx<(xj-xi)*(ny-yi)/(yj-yi)+xi))i2=!i2;}return i2;}
+  function init(){
+    const r=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
+    canvas.width=r.width*dpr;canvas.height=r.height*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    const W=r.width,H=r.height;pins=[];roads=[];
+    for(let i=0;i<22;i++){const p=[],hz=Math.random()>.35,n=5+~~(Math.random()*4);if(hz){const by=.15+Math.random()*.7;for(let s=0;s<=n;s++)p.push([s/n*.85+.08,by+Math.sin(s*.9)*.02+(Math.random()-.5)*.01]);}else{const bx=.08+Math.random()*.84;for(let s=0;s<=n;s++)p.push([bx+Math.sin(s*1.1)*.02+(Math.random()-.5)*.01,s/n*.72+.12]);}roads.push({pts:p,a:.015+Math.random()*.025,w:.3+Math.random()*.5});}
+    const metros=[[-122.4,37.8,.8],[-118.2,34,.9],[-122.3,47.6,.7],[-121.9,36.9,.4],[-117.2,32.7,.5],[-122.7,45.5,.6],[-117.9,33.8,.4],[-111.9,40.8,.5],[-105,39.7,.6],[-112,33.4,.6],[-115.1,36.2,.4],[-106.6,35.1,.4],[-97.5,35.5,.5],[-96.7,33,.6],[-95.4,29.8,.8],[-97.7,30.3,.5],[-90.2,38.6,.6],[-87.6,41.9,.8],[-93.3,45,.5],[-86.8,36.2,.5],[-94.6,39.1,.5],[-90.1,30,.4],[-84.4,33.7,.7],[-86.1,39.8,.4],[-74,40.7,.9],[-77,38.9,.7],[-75.2,40,.6],[-71.1,42.4,.7],[-80.8,35.2,.5],[-80.2,26.1,.6],[-82.5,28,.5],[-81.7,41.5,.5],[-76.6,39.3,.5],[-78.6,35.8,.4],[-79.9,32.8,.4],[-84.5,39.1,.4],[-73.8,42.7,.3],[-69.8,43.7,.3],[-98.5,40,.3],[-88,44.5,.3],[-85.5,42.3,.3],[-109.5,46.5,.2],[-116.2,43.6,.2],[-120.5,39.5,.2],[-83.5,35.5,.3]];
+    const cNx=.5,cNy=.5;
+    metros.forEach(([lon,lat,d])=>{const cx=lonToX(lon),cy=latToY(lat),cnt=~~(d*8)+~~(Math.random()*3);for(let i=0;i<cnt;i++){const nx=cx+(Math.random()-.5)*.06,ny=cy+(Math.random()-.5)*.06;if(!inUS(nx,ny))continue;const dx=nx-cNx,dy=ny-cNy,dist=Math.sqrt(dx*dx+dy*dy),cf=dist<.18?dist/.18:1;pins.push({x:nx*W,y:ny*H,r:1.8+Math.random()*1.2,c:Math.random()>.45?[43,191,173]:[180,196,192],a:(.12+Math.random()*.1)*cf,h:4+Math.random()*4,p:Math.random()*Math.PI*2,s:.003+Math.random()*.006,en:.2+Math.random()*2.5});}});
+    for(let i=0;i<30;i++){const nx=.05+Math.random()*.9,ny=.05+Math.random()*.9;if(!inUS(nx,ny))continue;const dx=nx-cNx,dy=ny-cNy,dist=Math.sqrt(dx*dx+dy*dy),cf=dist<.18?dist/.18:1;pins.push({x:nx*W,y:ny*H,r:1.2+Math.random()*1,c:Math.random()>.5?[43,191,173]:[180,196,192],a:(.08+Math.random()*.08)*cf,h:3+Math.random()*3,p:Math.random()*Math.PI*2,s:.002+Math.random()*.005,en:.3+Math.random()*3});}
+  }
+  function drawPath(W,H){ctx.beginPath();ctx.moveTo(US[0][0]*W,US[0][1]*H);for(let i=1;i<US.length;i++){const[px,py]=US[i-1],[cx,cy]=US[i];ctx.quadraticCurveTo(px*W,py*H,(px+cx)/2*W,(py+cy)/2*H);}ctx.closePath();}
+  function draw(){
+    const dpr=Math.min(devicePixelRatio||1,2),W=canvas.width/dpr,H=canvas.height/dpr;t+=.016;
+    ctx.fillStyle='#F7F9F9';ctx.fillRect(0,0,W,H);
+    ctx.lineWidth=.5;ctx.strokeStyle='rgba(0,0,0,0.018)';
+    for(let x=0;x<W;x+=80){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(let y=0;y<H;y+=80){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    drawPath(W,H);ctx.fillStyle='rgba(212,223,225,0.3)';ctx.fill();
+    ctx.strokeStyle='rgba(26,46,53,0.08)';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.save();drawPath(W,H);ctx.clip();
+    roads.forEach(rd=>{ctx.beginPath();const p=rd.pts;ctx.moveTo(p[0][0]*W,p[0][1]*H);for(let i=1;i<p.length-1;i++)ctx.quadraticCurveTo(p[i][0]*W,p[i][1]*H,(p[i][0]+p[i+1][0])/2*W,(p[i][1]+p[i+1][1])/2*H);ctx.strokeStyle=`rgba(26,46,53,${rd.a})`;ctx.lineWidth=rd.w;ctx.stroke();});
+    ctx.restore();
+    const sorted=[...pins].sort((a,b)=>a.y-b.y);
+    sorted.forEach(pin=>{if(t<pin.en)return;const prog=Math.min((t-pin.en)/.5,1),ease=1-Math.pow(1-prog,3);pin.p+=pin.s;const r=pin.r+Math.sin(pin.p)*.15,al=pin.a*ease;if(al<.02)return;const[cr,cg,cb]=pin.c,h=pin.h*ease;
+    ctx.beginPath();ctx.ellipse(pin.x,pin.y,r*.9,r*.3,0,0,Math.PI*2);ctx.fillStyle=`rgba(0,0,0,${.03*ease})`;ctx.fill();
+    ctx.beginPath();ctx.moveTo(pin.x,pin.y);ctx.lineTo(pin.x,pin.y-h);ctx.strokeStyle=`rgba(${cr},${cg},${cb},${al*.35})`;ctx.lineWidth=.6;ctx.stroke();
+    ctx.beginPath();ctx.arc(pin.x,pin.y-h,r,0,Math.PI*2);ctx.fillStyle=`rgba(${cr},${cg},${cb},${al})`;ctx.fill();});
+    af=requestAnimationFrame(draw);
+  }
+  init();draw();
+  let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{cancelAnimationFrame(af);init();draw();},150);});
+})();
+
+// ═══ SECTION MAP ═══
+;(function(){
+  const c=document.getElementById('mapCanvas');if(!c)return;
+  const ctx=c.getContext('2d');let dots=[],af;
+  function init(){const r=c.getBoundingClientRect();c.width=r.width*2;c.height=r.height*2;ctx.scale(2,2);const W=r.width,H=r.height;dots=[];for(let i=0;i<200;i++){const a=Math.random()*Math.PI*2,d=Math.random()*Math.min(W,H)*.4,wb=Math.sin(a*3)*25+Math.cos(a*2)*18,x=W*.5+Math.cos(a)*(d+wb),y=H*.5+Math.sin(a)*(d*.7+wb*.5);if(x>15&&x<W-15&&y>15&&y<H-15)dots.push({x,y,br:2+Math.random()*3,r:0,c:Math.random()>.42?'rgba(43,191,173,':'rgba(167,190,198,',a:.3+Math.random()*.5,p:Math.random()*Math.PI*2,s:.01+Math.random()*.02});}}
+  function draw(){const W=c.width/2,H=c.height/2;ctx.clearRect(0,0,W,H);ctx.strokeStyle='rgba(255,255,255,0.03)';ctx.lineWidth=.5;for(let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}for(let y=0;y<H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}dots.forEach(d=>{d.p+=d.s;const s=Math.sin(d.p);d.r=d.br+s*.8;const al=d.a+s*.1;ctx.beginPath();ctx.arc(d.x,d.y,d.r*3,0,Math.PI*2);ctx.fillStyle=d.c+(al*.12)+')';ctx.fill();ctx.beginPath();ctx.arc(d.x,d.y,d.r,0,Math.PI*2);ctx.fillStyle=d.c+al+')';ctx.fill();});af=requestAnimationFrame(draw);}
+  init();draw();let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{cancelAnimationFrame(af);init();draw();},150);});
+})();
+</script>
+</body>
+</html>

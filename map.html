@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="SoilCensus Map — explore crowdsourced soil microbiome data across North Carolina.">
+<title>The Map — SoilCensus</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;0,900;1,300;1,400&family=Barlow+Condensed:wght@300;400;700;900&display=swap" rel="stylesheet">
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --white:#FFFFFF;--off:#F7F9F9;--teal:#2BBFAD;--teal-text:#0C6B61;
+  --teal-dk:#1E9D8E;--teal-lt:#E6F8F6;--navy:#1A2E35;--text:#1A2E35;
+  --text-mid:#3D5560;--text-dim:#4E6870;--border:#D4DFE1;
+  --light-head:#F7F9F9;--light-body:#A7BEC6;
+  --green:#2D9D4E;--green-lt:#E8F5ED;--green-text:#1B7A36;
+  --yellow:#E8A817;--yellow-lt:#FFF8E5;--yellow-text:#9A6F00;
+  --f-head:'Barlow Condensed','Arial Narrow',sans-serif;
+  --f-body:'Barlow',-apple-system,sans-serif;
+}
+html,body{height:100%;font-family:var(--f-body);color:var(--text);background:var(--off);-webkit-font-smoothing:antialiased}
+*:focus-visible{outline:2px solid var(--teal-dk);outline-offset:3px;border-radius:4px}
+
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  padding:0.75rem 2rem;display:flex;align-items:center;justify-content:space-between;
+  background:rgba(247,249,249,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  box-shadow:0 1px 0 rgba(0,0,0,0.06);
+}
+.nav-logo{font-family:var(--f-head);font-size:1.4rem;font-weight:700;color:var(--navy);text-decoration:none;text-transform:uppercase;letter-spacing:.02em}
+.nav-logo span{color:var(--teal-text)}
+.nav-right{display:flex;align-items:center;gap:2rem}
+.nav-right a{font-size:.85rem;font-weight:500;color:var(--text-mid);text-decoration:none;transition:color .3s}
+.nav-right a:hover{color:var(--navy)}
+
+.map-wrap{position:absolute;top:0;left:0;right:0;bottom:0;padding-top:52px}
+#map{width:100%;height:100%}
+
+.stats-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:900;
+  background:var(--navy);padding:0.65rem 2rem;
+  display:flex;align-items:center;justify-content:center;gap:3rem;
+}
+.stat{display:flex;align-items:center;gap:0.5rem}
+.stat-value{font-family:var(--f-head);font-weight:700;font-size:1.3rem;color:var(--teal);text-transform:uppercase}
+.stat-label{font-size:0.75rem;font-weight:500;color:var(--light-body);letter-spacing:0.06em;text-transform:uppercase}
+
+.legend{
+  position:fixed;top:68px;right:16px;z-index:900;
+  background:var(--white);border:1px solid var(--border);
+  border-radius:10px;padding:1rem 1.25rem;
+  box-shadow:0 4px 20px rgba(0,0,0,0.08);
+  font-size:0.8rem;color:var(--text-mid);max-width:210px;
+}
+.legend h4{font-family:var(--f-head);font-weight:700;font-size:0.9rem;color:var(--navy);text-transform:uppercase;margin-bottom:0.6rem}
+.legend-item{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem}
+.legend-item:last-child{margin-bottom:0}
+.legend-pin{width:16px;height:22px;flex-shrink:0;display:flex;align-items:flex-start;justify-content:center}
+.legend-pin svg{width:16px;height:22px}
+
+/* Popups */
+.mapboxgl-popup-content{
+  font-family:var(--f-body)!important;padding:0!important;border-radius:12px!important;
+  box-shadow:0 8px 30px rgba(0,0,0,0.12)!important;overflow:hidden;min-width:250px;
+}
+.mapboxgl-popup-close-button{font-size:18px;color:var(--text-dim);padding:8px 10px;right:2px;top:2px}
+.mapboxgl-popup-close-button:hover{color:var(--navy);background:transparent}
+.mapboxgl-popup-tip{border-top-color:var(--white)!important}
+
+.popup-head{background:var(--navy);padding:0.75rem 1rem;color:var(--light-head)}
+.popup-head h3{font-family:var(--f-head);font-weight:700;font-size:1rem;text-transform:uppercase;margin-bottom:0.15rem}
+.popup-head p{font-size:0.72rem;color:var(--light-body);font-weight:500}
+
+.popup-status{display:flex;align-items:center;gap:0.5rem;padding:0.6rem 1rem;border-bottom:1px solid var(--border)}
+.popup-status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.popup-status-label{font-size:0.8rem;font-weight:600}
+
+.popup-body{padding:0.75rem 1rem}
+.popup-row{display:flex;justify-content:space-between;align-items:center;padding:0.25rem 0;border-bottom:1px solid var(--border)}
+.popup-row:last-child{border-bottom:none}
+.popup-row-label{font-size:0.78rem;color:var(--text-dim);font-weight:500}
+.popup-row-value{font-size:0.82rem;color:var(--text);font-weight:600}
+
+@media(max-width:768px){
+  nav{padding:0.65rem 1rem}
+  .nav-right{gap:1.25rem}
+  .nav-right a{font-size:0.8rem}
+  .legend{top:60px;right:8px;left:8px;max-width:none;display:flex;gap:1rem;padding:0.6rem 1rem;align-items:center}
+  .legend h4{margin-bottom:0;margin-right:0.25rem;white-space:nowrap}
+  .legend-item{margin-bottom:0}
+  .stats-bar{gap:1.5rem;padding:0.6rem 1rem}
+  .stat-value{font-size:1.1rem}
+  .stat-label{font-size:0.65rem}
+}
+@media(max-width:480px){
+  .stats-bar{gap:1rem}
+  .stat-label{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav role="navigation" aria-label="Map navigation">
+  <a href="index.html" class="nav-logo" aria-label="SoilCensus home">Soil<span>Census</span></a>
+  <div class="nav-right">
+    <a href="index.html">← Home</a>
+    <a href="index.html#how-it-works">How It Works</a>
+  </div>
+</nav>
+
+<div class="legend" role="complementary" aria-label="Map legend">
+  <h4>Status</h4>
+  <div class="legend-item">
+    <div class="legend-pin" aria-hidden="true"><svg viewBox="0 0 24 36"><path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0z" fill="#2D9D4E"/><circle cx="12" cy="11" r="5" fill="white" opacity="0.9"/></svg></div>
+    Complete
+  </div>
+  <div class="legend-item">
+    <div class="legend-pin" aria-hidden="true"><svg viewBox="0 0 24 36"><path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0z" fill="#2BBFAD"/><circle cx="12" cy="11" r="5" fill="white" opacity="0.9"/></svg></div>
+    Requested
+  </div>
+  <div class="legend-item">
+    <div class="legend-pin" aria-hidden="true"><svg viewBox="0 0 24 36"><path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0z" fill="#E8A817"/><circle cx="12" cy="11" r="5" fill="white" opacity="0.9"/></svg></div>
+    Processing
+  </div>
+</div>
+
+<div class="map-wrap">
+  <div id="map" role="application" aria-label="Interactive soil sample map">
+    <div id="map-fallback" style="display:none;position:absolute;inset:0;z-index:10;background:var(--off);align-items:center;justify-content:center;text-align:center;padding:2rem;">
+      <div>
+        <div style="font-family:var(--f-head);font-size:1.8rem;font-weight:700;color:var(--navy);text-transform:uppercase;margin-bottom:0.5rem;">Map Loading</div>
+        <p style="font-size:0.95rem;color:var(--text-mid);max-width:380px;margin:0 auto 1.5rem;">The interactive map requires an internet connection to load. If you're viewing this locally, please open the file in a browser connected to the internet.</p>
+        <a href="index.html" style="font-family:var(--f-body);font-size:0.88rem;font-weight:600;color:var(--teal-text);">← Back to Home</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="stats-bar" role="status" aria-label="Map statistics">
+  <div class="stat"><span class="stat-value" id="sampleCount">0</span><span class="stat-label">Samples</span></div>
+  <div class="stat"><span class="stat-value" id="completeCount">0</span><span class="stat-label">Complete</span></div>
+  <div class="stat"><span class="stat-value" id="processingCount">0</span><span class="stat-label">Processing</span></div>
+  <div class="stat"><span class="stat-value" id="requestedCount">0</span><span class="stat-label">Requested</span></div>
+</div>
+
+<script>
+if (typeof mapboxgl === 'undefined') {
+  document.getElementById('map-fallback').style.display = 'flex';
+} else {
+
+mapboxgl.accessToken = 'pk.eyJ1Ijoic3RhcnJmbHlsYWJzYWRtaW4iLCJhIjoiY21tZjJvMnk3MDNyMzJzcHh1c2dhZDV4dSJ9.v5IDW1woqHZIzdWLp7q9Ig';
+
+// ─── Sample Data (NC focused) ───
+const samples = [
+  // ── Complete (green) ──
+  { lat:36.07, lng:-79.79, city:"Greensboro",county:"Guilford",land:"Community Garden",status:"complete",species:847,diversity:82,percentile:89,dominant:"Proteobacteria",nFixers:"High",decomp:"High",pathogen:"None detected",date:"2026-01-15" },
+  { lat:36.34, lng:-80.21, city:"Danbury",county:"Stokes",land:"Family Farm",status:"complete",species:923,diversity:91,percentile:96,dominant:"Acidobacteria",nFixers:"High",decomp:"High",pathogen:"None detected",date:"2025-12-10" },
+  { lat:35.22, lng:-80.84, city:"Charlotte",county:"Mecklenburg",land:"Backyard",status:"complete",species:701,diversity:74,percentile:76,dominant:"Proteobacteria",nFixers:"High",decomp:"Moderate",pathogen:"None detected",date:"2026-01-28" },
+  { lat:35.77, lng:-78.64, city:"Raleigh",county:"Wake",land:"Urban Park",status:"complete",species:523,diversity:55,percentile:42,dominant:"Firmicutes",nFixers:"Low",decomp:"Moderate",pathogen:"None detected",date:"2026-02-20" },
+  { lat:35.96, lng:-78.96, city:"Durham",county:"Durham",land:"School Garden",status:"complete",species:678,diversity:72,percentile:73,dominant:"Actinobacteria",nFixers:"Moderate",decomp:"High",pathogen:"None detected",date:"2026-01-08" },
+  { lat:36.10, lng:-80.26, city:"Winston-Salem",county:"Forsyth",land:"Community Garden",status:"complete",species:756,diversity:79,percentile:83,dominant:"Proteobacteria",nFixers:"High",decomp:"High",pathogen:"None detected",date:"2025-12-22" },
+  { lat:35.60, lng:-82.55, city:"Asheville",county:"Buncombe",land:"Urban Farm",status:"complete",species:889,diversity:89,percentile:94,dominant:"Acidobacteria",nFixers:"High",decomp:"High",pathogen:"None detected",date:"2026-02-03" },
+  { lat:35.45, lng:-83.45, city:"Bryson City",county:"Swain",land:"Forest Edge",status:"complete",species:934,diversity:93,percentile:97,dominant:"Acidobacteria",nFixers:"High",decomp:"High",pathogen:"None detected",date:"2025-11-28" },
+  { lat:34.23, lng:-77.95, city:"Wilmington",county:"New Hanover",land:"Residential Garden",status:"complete",species:612,diversity:65,percentile:58,dominant:"Firmicutes",nFixers:"Moderate",decomp:"Moderate",pathogen:"Low Fusarium",date:"2026-01-20" },
+  { lat:35.11, lng:-80.71, city:"Pineville",county:"Mecklenburg",land:"Backyard",status:"complete",species:645,diversity:69,percentile:67,dominant:"Proteobacteria",nFixers:"Moderate",decomp:"High",pathogen:"None detected",date:"2026-02-14" },
+  { lat:36.45, lng:-79.40, city:"Reidsville",county:"Rockingham",land:"Tobacco Farm",status:"complete",species:812,diversity:85,percentile:91,dominant:"Proteobacteria",nFixers:"High",decomp:"High",pathogen:"None detected",date:"2025-12-05" },
+  { lat:35.87, lng:-79.79, city:"Pleasant Garden",county:"Guilford",land:"Homestead",status:"complete",species:867,diversity:87,percentile:92,dominant:"Acidobacteria",nFixers:"High",decomp:"High",pathogen:"None detected",date:"2026-01-03" },
+  // ── Processing (yellow) ──
+  { lat:35.59, lng:-79.39, city:"Asheboro",county:"Randolph",land:"Residential Garden",status:"processing",species:null,diversity:null,percentile:null,dominant:null,nFixers:null,decomp:null,pathogen:null,date:"2026-02-25" },
+  { lat:36.09, lng:-79.44, city:"Burlington",county:"Alamance",land:"Community Garden",status:"processing",species:null,diversity:null,percentile:null,dominant:null,nFixers:null,decomp:null,pathogen:null,date:"2026-02-28" },
+  { lat:35.79, lng:-80.88, city:"Statesville",county:"Iredell",land:"Family Farm",status:"processing",species:null,diversity:null,percentile:null,dominant:null,nFixers:null,decomp:null,pathogen:null,date:"2026-03-01" },
+  { lat:35.27, lng:-81.54, city:"Shelby",county:"Cleveland",land:"Backyard",status:"processing",species:null,diversity:null,percentile:null,dominant:null,nFixers:null,decomp:null,pathogen:null,date:"2026-02-22" },
+  { lat:36.21, lng:-81.67, city:"Boone",county:"Watauga",land:"Research Plot",status:"processing",species:null,diversity:null,percentile:null,dominant:null,nFixers:null,decomp:null,pathogen:null,date:"2026-03-02" },
+  { lat:35.35, lng:-78.85, city:"Sanford",county:"Lee",land:"Agricultural Field",status:"processing",species:null,diversity:null,percentile:null,dominant:null,nFixers:null,decomp:null,pathogen:null,date:"2026-02-20" },
+  // ── Requested (teal) ──
+  { lat:36.46, lng:-80.61, city:"Mount Airy",county:"Surry",land:"Vineyard",status:"requested",species:null,diversity:null,percentile:null,dominant:null,nFixers:null,decomp:null,pathogen:null,date:"2026-03-04" },
+  { lat:35.05, lng:-78.88, city:"Fayetteville",county:"Cumberland",land:"Backyard",status:"requested",species:null,diversity:null,percentile:null,dominant:null,nFixers:null,decomp:null,pathogen:null,date:"2026-03-05" },
+  { lat:35.91, lng:-78.07, city:"Rocky Mount",county:"Edgecombe",land:"Community Garden",status:"requested",species:null,diversity:null,percentile:null,dominant:null,nFixers:null,decomp:null,pathogen:null,date:"2026-03-03" },
+  { lat:34.94, lng:-79.97, city:"Rockingham",county:"Richmond",land:"Residential Garden",status:"requested",species:null,diversity:null,percentile:null,dominant:null,nFixers:null,decomp:null,pathogen:null,date:"2026-03-06" },
+  { lat:35.47, lng:-80.54, city:"Concord",county:"Cabarrus",land:"School Garden",status:"requested",species:null,diversity:null,percentile:null,dominant:null,nFixers:null,decomp:null,pathogen:null,date:"2026-03-05" },
+  { lat:36.07, lng:-78.90, city:"Hillsborough",county:"Orange",land:"Farm",status:"requested",species:null,diversity:null,percentile:null,dominant:null,nFixers:null,decomp:null,pathogen:null,date:"2026-03-06" },
+  { lat:35.73, lng:-81.34, city:"Hickory",county:"Catawba",land:"Backyard",status:"requested",species:null,diversity:null,percentile:null,dominant:null,nFixers:null,decomp:null,pathogen:null,date:"2026-03-04" },
+];
+
+const statusColors = { complete:'#2D9D4E', processing:'#E8A817', requested:'#2BBFAD' };
+const statusLabels = { complete:'Analysis Complete', processing:'Processing at Lab', requested:'Kit Requested' };
+
+// Create teardrop pin SVG for each status
+function makePinSVG(color) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="42" viewBox="0 0 30 42">
+    <defs><filter id="s" x="-20%" y="-10%" width="140%" height="130%"><feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-opacity="0.25"/></filter></defs>
+    <path d="M15 0C6.7 0 0 6.7 0 15c0 11.25 15 27 15 27s15-15.75 15-27C30 6.7 23.3 0 15 0z" fill="${color}" filter="url(#s)"/>
+    <circle cx="15" cy="14" r="6" fill="white" opacity="0.9"/>
+  </svg>`;
+  return svg;
+}
+
+// ─── Init Map (centered on NC) ───
+const map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/mapbox/light-v11',
+  center: [-79.8, 35.6],
+  zoom: 7,
+  minZoom: 5,
+  maxZoom: 16,
+  attributionControl: false
+});
+
+map.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-left');
+map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-left');
+
+map.on('load', () => {
+  // Create pin images for each status
+  const statuses = ['complete','processing','requested'];
+  let loaded = 0;
+
+  statuses.forEach(status => {
+    const svg = makePinSVG(statusColors[status]);
+    const img = new Image(30, 42);
+    img.onload = () => {
+      map.addImage(`pin-${status}`, img, { pixelRatio: 2 });
+      loaded++;
+      if (loaded === statuses.length) addLayers();
+    };
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  });
+
+  function addLayers() {
+    map.addSource('samples', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: samples.map((s, i) => ({
+          type: 'Feature',
+          id: i,
+          geometry: { type: 'Point', coordinates: [s.lng, s.lat] },
+          properties: { ...s, statusColor: statusColors[s.status], statusLabel: statusLabels[s.status] }
+        }))
+      }
+    });
+
+    // Pin layer
+    map.addLayer({
+      id: 'sample-pins',
+      type: 'symbol',
+      source: 'samples',
+      layout: {
+        'icon-image': ['concat', 'pin-', ['get', 'status']],
+        'icon-size': 0.85,
+        'icon-anchor': 'bottom',
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': false,
+        'icon-padding': 2,
+        'symbol-sort-key': ['match', ['get','status'], 'complete', 0, 'processing', 1, 2]
+      }
+    });
+
+    // Click popup
+    map.on('click', 'sample-pins', (e) => {
+      const f = e.features[0];
+      const p = f.properties;
+      const coord = f.geometry.coordinates.slice();
+      const isComplete = p.status === 'complete';
+
+      const dotColor = statusColors[p.status];
+
+      let body = '';
+      if (isComplete) {
+        body = `
+          <div class="popup-body">
+            <div class="popup-row"><span class="popup-row-label">Species Detected</span><span class="popup-row-value">${Number(p.species).toLocaleString()}</span></div>
+            <div class="popup-row"><span class="popup-row-label">Diversity Score</span><span class="popup-row-value">${p.diversity}</span></div>
+            <div class="popup-row"><span class="popup-row-label">Percentile</span><span class="popup-row-value">${p.percentile}th</span></div>
+            <div class="popup-row"><span class="popup-row-label">Dominant Group</span><span class="popup-row-value">${p.dominant}</span></div>
+            <div class="popup-row"><span class="popup-row-label">N₂ Fixers</span><span class="popup-row-value">${p.nFixers}</span></div>
+            <div class="popup-row"><span class="popup-row-label">Decomposers</span><span class="popup-row-value">${p.decomp}</span></div>
+            <div class="popup-row"><span class="popup-row-label">Pathogens</span><span class="popup-row-value">${p.pathogen}</span></div>
+          </div>`;
+      } else {
+        const msg = p.status === 'processing'
+          ? 'Sample received by lab. Results expected in 2–3 weeks.'
+          : 'Kit requested. Shipping to contributor.';
+        body = `<div class="popup-body"><p style="font-size:0.85rem;color:var(--text-mid);margin:0;line-height:1.6;">${msg}</p></div>`;
+      }
+
+      const html = `
+        <div class="popup-head">
+          <h3>${p.city}, ${p.county} County</h3>
+          <p>${p.land} · ${p.date}</p>
+        </div>
+        <div class="popup-status">
+          <div class="popup-status-dot" style="background:${dotColor}"></div>
+          <span class="popup-status-label" style="color:${dotColor}">${statusLabels[p.status]}</span>
+        </div>
+        ${body}
+      `;
+
+      new mapboxgl.Popup({ offset: [0, -20], maxWidth: '280px' })
+        .setLngLat(coord)
+        .setHTML(html)
+        .addTo(map);
+    });
+
+    map.on('mouseenter', 'sample-pins', () => map.getCanvas().style.cursor = 'pointer');
+    map.on('mouseleave', 'sample-pins', () => map.getCanvas().style.cursor = '');
+  }
+});
+
+// ─── Stats ───
+const counts = { complete:0, processing:0, requested:0 };
+samples.forEach(s => counts[s.status]++);
+
+function animateCount(el, target) {
+  let cur = 0;
+  const step = Math.max(1, Math.ceil(target / 30));
+  const iv = setInterval(() => {
+    cur += step;
+    if (cur >= target) { cur = target; clearInterval(iv); }
+    el.textContent = cur;
+  }, 35);
+}
+
+setTimeout(() => {
+  animateCount(document.getElementById('sampleCount'), samples.length);
+  animateCount(document.getElementById('completeCount'), counts.complete);
+  animateCount(document.getElementById('processingCount'), counts.processing);
+  animateCount(document.getElementById('requestedCount'), counts.requested);
+}, 500);
+
+} // end else (mapboxgl check)
+</script>
+
+</body>
+</html>
